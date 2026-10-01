@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Study Hub</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:#fff}
+header{padding:28px 18px;text-align:center;background:linear-gradient(135deg,#111a38,#172554)}
+h1{margin:0;font-size:32px}
+header p{margin:8px 0 0;color:#cbd5e1}
+nav{display:flex;gap:8px;overflow:auto;padding:12px;background:#111827;position:sticky;top:0;z-index:5}
+nav button{white-space:nowrap;border:0;border-radius:12px;padding:11px 14px;background:#25304a;color:#fff;font-weight:bold}
+nav button.active{background:#38bdf8;color:#06111c}
+main{max-width:760px;margin:auto;padding:18px}
+.page{display:none}
+.page.active{display:block}
+.card{background:#151f35;border:1px solid #263552;border-radius:18px;padding:20px;margin-bottom:16px}
+.big{font-size:22px;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+input,textarea{width:100%;padding:13px;border-radius:12px;border:1px solid #3a4865;background:#0e1628;color:white;margin:8px 0}
+button.action{border:0;border-radius:12px;padding:12px 16px;background:#38bdf8;color:#06111c;font-weight:bold}
+.timer{font-size:52px;text-align:center;margin:20px 0;font-weight:bold}
+.option{display:block;width:100%;text-align:left;margin:8px 0;padding:13px;border:1px solid #34435f;background:#202c45;color:white;border-radius:12px}
+#score{font-weight:bold;margin-top:12px}
+.small{color:#aebbd0}
+</style>
+</head>
+<body>
+<header>
+<h1>🤖 Smart Study Hub</h1>
+<p>Class 10 • Notes • Quiz • Maths • Study Timer</p>
+</header>
+
+<nav>
+<button class="active" onclick="show('home',this)">🏠 Home</button>
+<button onclick="show('math',this)">🧮 Maths</button>
+<button onclick="show('quiz',this)">📝 Quiz</button>
+<button onclick="show('notes',this)">📚 Notes</button>
+<button onclick="show('timer',this)">⏱️ Timer</button>
+</nav>
+
+<main>
+<section id="home" class="page active">
+<div class="card">
+<div class="big">🚀 मेरा Smart Study Project</div>
+<p class="small">एक फोन से बनाया गया छोटा learning dashboard.</p>
+</div>
+<div class="grid">
+<div class="card"><div class="big">🧮 Maths</div><p>Square और basic calculation.</p></div>
+<div class="card"><div class="big">📝 Quiz</div><p>अपना score check करो.</p></div>
+<div class="card"><div class="big">📚 Notes</div><p>अपने notes सेव करो.</p></div>
+<div class="card"><div class="big">⏱️ Timer</div><p>Study session शुरू करो.</p></div>
+</div>
+</section>
+
+<section id="math" class="page">
+<div class="card">
+<h2>🧮 Maths Calculator</h2>
+<input id="num" type="number" placeholder="कोई संख्या लिखो">
+<button class="action" onclick="square()">Square निकालो</button>
+<p id="answer"></p>
+</div>
+</section>
+
+<section id="quiz" class="page">
+<div class="card">
+<h2>📝 Quick Quiz</h2>
+<p><b>भारत की राजधानी क्या है?</b></p>
+<button class="option" onclick="check(this,false)">A. मुंबई</button>
+<button class="option" onclick="check(this,true)">B. नई दिल्ली</button>
+<button class="option" onclick="check(this,false)">C. जयपुर</button>
+<button class="option" onclick="check(this,false)">D. भोपाल</button>
+<p id="score"></p>
+</div>
+</section>
+
+<section id="notes" class="page">
+<div class="card">
+<h2>📚 My Notes</h2>
+<textarea id="notesBox" rows="10" placeholder="आज जो पढ़ा, यहाँ लिखो..."></textarea>
+<button class="action" onclick="saveNotes()">💾 Notes Save</button>
+<p id="saved"></p>
+</div>
+</section>
+
+<section id="timer" class="page">
+<div class="card">
+<h2>⏱️ Study Timer</h2>
+<div class="timer" id="time">25:00</div>
+<button class="action" onclick="startTimer()">▶ Start</button>
+<button class="action" onclick="resetTimer()">↻ Reset</button>
+<p class="small">25 मिनट पढ़ाई का एक session.</p>
+</div>
+</section>
+</main>
+
+<script>
+function show(id,btn){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ btn.classList.add('active');
+}
+function square(){
+ let n=Number(document.getElementById('num').value);
+ document.getElementById('answer').textContent =
+ isNaN(n) ? 'पहले संख्या लिखो।' : 'Answer: '+(n*n);
+}
+let points=0;
+function check(btn,correct){
+ document.querySelectorAll('.option').forEach(x=>x.disabled=true);
+ document.getElementById('score').textContent=correct?'✅ सही! Score: 1/1':'❌ गलत। सही उत्तर: नई दिल्ली';
+}
+function saveNotes(){
+ localStorage.setItem('smartNotes',document.getElementById('notesBox').value);
+ document.getElementById('saved').textContent='✅ Notes इस फोन में सेव हो गए।';
+}
+document.getElementById('notesBox').value=localStorage.getItem('smartNotes')||'';
+let seconds=1500, interval=null;
+function renderTimer(){
+ let m=String(Math.floor(seconds/60)).padStart(2,'0');
+ let s=String(seconds%60).padStart(2,'0');
+ document.getElementById('time').textContent=m+':'+s;
+}
+function startTimer(){
+ if(interval)return;
+ interval=setInterval(()=>{
+  if(seconds>0){seconds--;renderTimer();}
+  else{clearInterval(interval);interval=null;alert('🎉 Study session पूरा!');}
+ },1000);
+}
+function resetTimer(){
+ clearInterval(interval);interval=null;seconds=1500;renderTimer();
+}
+renderTimer();
+</script>
+</body>
+</html>
